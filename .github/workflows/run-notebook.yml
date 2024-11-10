@@ -6,6 +6,9 @@ on:
       - main  # Change this to your default branch if necessary
   workflow_dispatch:  # Allows manual triggering of the workflow
 
+permissions:
+  contents: write
+  
 jobs:
   run-notebook:
     runs-on: ubuntu-latest

@@ -1,9 +1,8 @@
 name: Run Jupyter Notebook
 
 on:
-  push:
-    branches:
-      - main  # Change this to your default branch if necessary
+  schedule:
+    - cron: '30 15 * * *'  # 17:30 GMT+2 converted to UTC (15:30)
   workflow_dispatch:  # Allows manual triggering of the workflow
 
 permissions:
@@ -20,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'  # Specify the Python version you need
+          python-version: '3.8'
 
       - name: Install dependencies
         run: |

@@ -27,7 +27,7 @@ jobs:
       - name: Run Jupyter Notebook
         run: |
           TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-          jupyter nbconvert --to notebook --execute your_notebook.ipynb --output "results_$TIMESTAMP.ipynb"
+          jupyter nbconvert --to notebook --execute Zimstockdata.ipynb --output "results_$TIMESTAMP.ipynb"
 
       - name: Commit results
         run: |

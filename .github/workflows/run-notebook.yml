@@ -27,13 +27,13 @@ jobs:
       - name: Run Jupyter Notebook
         run: |
           TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-          jupyter nbconvert --to notebook --execute Zimstockdata.ipynb --output "results_$TIMESTAMP.ipynb"
+          jupyter nbconvert --to notebook --execute Zimstockdata.ipynb"
 
       - name: Commit results
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add "results_$TIMESTAMP.ipynb"
+          git add *
           git commit -m "Add results for notebook run at $TIMESTAMP"
           git push
         env:

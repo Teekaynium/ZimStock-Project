@@ -1,0 +1,8 @@
+requests
+pandas
+pytz
+schedule
+lxml
+html5lib
+jupyter
+nbconvert

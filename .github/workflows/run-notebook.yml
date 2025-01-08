@@ -31,6 +31,10 @@ jobs:
           TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
           jupyter nbconvert --to notebook --execute Zimstockdata.ipynb
 
+      - name: Run TK Jupyter Notebook
+        run: |
+          jupyter nbconvert --to notebook --execute Zimstockdata.tk.ipynb
+
       - name: Commit results
         run: |
           git config --local user.email "action@github.com"

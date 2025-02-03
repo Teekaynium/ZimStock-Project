@@ -50,5 +50,5 @@ Save Updated Data File:  <br/>
 <img src="https://i.imgur.com/gMxbkJS.png" height="80%" width="80%" alt="Modelling"/>
 <br />
 <br />
-The above code is run daily and the data is stored in the archive-single-file folder as a json file. 
+The above code is run daily and the data is stored in the archive-single-file folder as a json file via this cron job(https://github.com/Teekaynium/ZimStock-Project/blob/62cfd0f296057a9905e54b3612265f087850d7e5/.github/workflows/run-notebook.yml). 
 </p>

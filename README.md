@@ -21,28 +21,33 @@ This project aims to extract Zimbabwe stock prices on a daily basis from the off
 <h2>Program walk-through:</h2>
 
 <p align="center">
-Getting data from yfinance: <br/>
-<img src="https://i.imgur.com/eYqVcPl.png" height="80%" width="80%" alt = "Data Collection"/>
+Getting data from Zimbabwe Stock Exchange Website: <br/>
+<img src="https://i.imgur.com/uaAI4k3.png" height="80%" width="80%" alt = "Data Collection"/>
 <br />
 <br />
-Fitting linear regression model to au_usd:  <br/>
-<img src="https://i.imgur.com/eYYyutt.png" height="80%" width="80%" alt="Trend Removal"/>
+Creating Dataframes for Specific Parameters from Extracted Data:  <br/>
+Open Price Dataframe Function
+<img src="https://i.imgur.com/Fw4iBe0.png" height="80%" width="80%" alt="Trend Removal"/>
+
+<p align="center">
+Close Price Dataframe Function
+<img src="https://i.imgur.com/6vHbAYX.png" height="80%" width="80%" alt="Trend Removal"/>
+
+<p align="center">
+Volume Traded Dataframe Function
+<img src="https://i.imgur.com/MePz3iP.png" height="80%" width="80%" alt="Trend Removal"/>
 <br />
 <br />
-Checking Residuals of above regression for trend: <br/>
-<img src="https://i.imgur.com/YxUavbf.png" height="80%" width="80%" alt="Trend Removal"/>
+Step 1 Existing json File with Historical Data:  <br/>
+<img src="https://i.imgur.com/YB00xcX.png" height="80%" width="80%" alt="Trend Removal"/>
 <br />
 <br />
-Checking First difference of time series:  <br/>
-<img src="https://i.imgur.com/XQZ6lxn.png" height="80%" width="80%" alt="Trend Removal"/>
+Update Historical Data File with Extracted Daily Data:  <br/>
+<img src="https://i.imgur.com/9ta14Fu.png" height="80%" width="80%" alt="Trend Removal"/>
 <br />
 <br />
-Plotting Autocorrelation function of first difference:  <br/>
-<img src="https://i.imgur.com/oh14Ct6.png" height="80%" width="80%" alt="Trend Removal"/>
-<br />
-<br />
-Choosing the best ARIMA setting using auto_arima package from pmdarima.arima:  <br/>
-<img src="https://i.imgur.com/59xGyLR.png" height="80%" width="80%" alt="Modelling"/>
+Save Updated Data File:  <br/>
+<img src="https://i.imgur.com/gMxbkJS.png" height="80%" width="80%" alt="Modelling"/>
 <br />
 <br />
 Plotting price prediction (within predetermined confidence intervals) versus Actual Data:  <br/>

@@ -20,6 +20,8 @@ This project aims to extract Zimbabwe stock prices and traded volumes on a daily
 
 <h2>Program walk-through:</h2>
 
+
+The code for the below section is found in this python file (https://github.com/Teekaynium/ZimStock-Project/blob/295ebbe165de6ec1ee9c4c151bad16cb87661642/Zimstockdata.tk.nbconvert.ipynb)
 <p align="center">
 Getting data from Zimbabwe Stock Exchange Website: <br/>
 <img src="https://i.imgur.com/uaAI4k3.png" height="80%" width="80%" alt = "Data Collection"/>
@@ -50,5 +52,5 @@ Save Updated Data File:  <br/>
 <img src="https://i.imgur.com/gMxbkJS.png" height="80%" width="80%" alt="Modelling"/>
 <br />
 <br />
-The above code is run daily and the data is stored in the archive-single-file folder as a json file via this cron job(https://github.com/Teekaynium/ZimStock-Project/blob/62cfd0f296057a9905e54b3612265f087850d7e5/.github/workflows/run-notebook.yml). 
+The above code is run daily and the data is stored in the archive-single-file folder as a json file via this cron job (https://github.com/Teekaynium/ZimStock-Project/blob/62cfd0f296057a9905e54b3612265f087850d7e5/.github/workflows/run-notebook.yml). 
 </p>

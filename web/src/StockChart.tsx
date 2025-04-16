@@ -105,6 +105,15 @@ export const StockChart: Component<StockChartProps> = (props) => {
 		// Create chart content group
 		const chartContent = svg.append("g").attr("clip-path", "url(#clip)");
 
+		// Add background rect to capture interactions
+		chartContent
+			.append("rect")
+			.attr("class", "zoom-capture")
+			.attr("width", width)
+			.attr("height", height)
+			.attr("fill", "none")
+			.attr("pointer-events", "all");
+
 		// Generate colors for each company
 		const colorScale = d3.scaleOrdinal(d3.schemeTableau10);
 
@@ -217,14 +226,14 @@ export const StockChart: Component<StockChartProps> = (props) => {
       });
 
 		// Add zoom behavior to svg and set cursor styles
-		svg
+		d3.select(svgRef)
 			.style("cursor", "grab")
 			.call(zoom)
 			.on("mousedown.cursor", () => {
-				svg.style("cursor", "grabbing");
+				d3.select(svgRef).style("cursor", "grabbing");
 			})
 			.on("mouseup.cursor", () => {
-				svg.style("cursor", "grab");
+				d3.select(svgRef).style("cursor", "grab");
 			});
 
 		// Add legend interactivity

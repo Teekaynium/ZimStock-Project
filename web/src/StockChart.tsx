@@ -91,6 +91,33 @@ export const StockChart: Component<StockChartProps> = (props) => {
 			.append("div")
 			.attr("class", "fixed hidden bg-black/75 text-white px-2 py-1 rounded text-sm pointer-events-none");
 
+		// Function to position tooltip
+		function positionTooltip(event: MouseEvent, tooltipNode: HTMLElement) {
+			const padding = 15;
+			const tooltipWidth = tooltipNode.offsetWidth;
+			const tooltipHeight = tooltipNode.offsetHeight;
+			const viewportWidth = window.innerWidth;
+			const viewportHeight = window.innerHeight;
+
+			// Default position (right of cursor)
+			let left = event.pageX + padding;
+			let top = event.pageY - (tooltipHeight / 2);
+
+			// If tooltip would go off right edge, show it on the left of cursor instead
+			if (left + tooltipWidth > viewportWidth - padding) {
+				left = event.pageX - tooltipWidth - padding;
+			}
+
+			// If tooltip would go off top/bottom edges, keep it within viewport
+			if (top < padding) {
+				top = padding;
+			} else if (top + tooltipHeight > viewportHeight - padding) {
+				top = viewportHeight - tooltipHeight - padding;
+			}
+
+			return { left, top };
+		}
+
 		// Create bisector for date values
 		const bisect = d3.bisector<[Date, number], Date>(d => d[0]).left;
 
@@ -158,13 +185,16 @@ export const StockChart: Component<StockChartProps> = (props) => {
 						if (d[1] === null || d[1] <= 0) return;
 
 						tooltip
-							.style("left", `${event.pageX + 10}px`)
-							.style("top", `${event.pageY - 10}px`)
 							.html(`
 								${company}<br/>
 								Date: ${formatDate(d[0])}<br/>
 								Price: $${d3.format(",.2f")(d[1])}
 							`.trim().replace(/\n\s*/g, '<br/>'));
+
+						const { left, top } = positionTooltip(event, tooltip.node() as HTMLElement);
+						tooltip
+							.style("left", `${left}px`)
+							.style("top", `${top}px`);
 					})
 					.on("mouseout", () => {
 						tooltip.classed("hidden", true);

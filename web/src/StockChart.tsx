@@ -182,15 +182,16 @@ export const StockChart: Component<StockChartProps> = (props) => {
       .extent([[0, 0], [width, height]])
       .translateExtent([[0, 0], [width, height]])
       .filter(event => {
-        // Only allow zooming with Ctrl/Cmd + wheel
         return (event.ctrlKey || event.metaKey) && event.type === 'wheel';
       })
       .on("zoom", (event) => {
-        // Update x scale
+        // Update both x and y scales
         const newX = event.transform.rescaleX(x);
+        const newY = event.transform.rescaleY(y);
         
         // Update axes
         gX.call(xAxis.scale(newX));
+        gY.call(yAxis.scale(newY));
         
         // Update all paths
         chartContent.selectAll("path")
@@ -198,7 +199,7 @@ export const StockChart: Component<StockChartProps> = (props) => {
             const newLine = d3.line<[Date, number]>()
               .defined((d): d is [Date, number] => d[1] !== null && d[1] > 0)
               .x(d => newX(d[0]))
-              .y(d => y(d[1]));
+              .y(d => newY(d[1]));
             return newLine(d);
           });
       });

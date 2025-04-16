@@ -1,9 +1,0 @@
-{
-  "scripts": {
-    "dev": "bun --watch run scripts.ts"
-  },
-  "dependencies": {},
-  "devDependencies": {
-    "@types/bun": "^1.1.16"
-  }
-}

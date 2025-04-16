@@ -87,13 +87,15 @@ export const StockChart: Component<StockChartProps> = (props) => {
 			.text("Price (log scale)");
 
 		// Create tooltip
-		const tooltip = d3
-			.select("body")
+		const tooltip = d3.select("body")
 			.append("div")
-			.attr(
-				"class",
-				"fixed hidden bg-black/75 text-white px-2 py-1 rounded text-sm pointer-events-none",
-			);
+			.attr("class", "fixed hidden bg-black/75 text-white px-2 py-1 rounded text-sm pointer-events-none");
+
+		// Create bisector for date values
+		const bisect = d3.bisector<[Date, number], Date>(d => d[0]).left;
+
+		// Function to format date
+		const formatDate = d3.timeFormat("%Y-%m-%d");
 
 		// Create line generator
 		const line = d3
@@ -119,11 +121,12 @@ export const StockChart: Component<StockChartProps> = (props) => {
 
 		// Add lines for each company
 		props.data.columns.forEach((company, columnIndex) => {
-			const companyData = props.data.data.map(
-				(row, i) => [dates[i], row[columnIndex]] as [Date, number],
-			);
+			const companyData = props.data.data.map((row, i) => [
+				dates[i],
+				row[columnIndex]
+			] as [Date, number]);
 
-			if (companyData.some((d) => d[1] !== null && d[1] > 0)) {
+			if (companyData.some(d => d[1] !== null && d[1] > 0)) {
 				const path = chartContent
 					.append("path")
 					.datum(companyData)
@@ -136,23 +139,37 @@ export const StockChart: Component<StockChartProps> = (props) => {
 
 				// Add hover effects and tooltip
 				path
-					.on("mouseover", (event) => {
-						tooltip
-							.classed("hidden", false)
-							.html(
-								`${company}<br/>Click and drag to pan horizontally<br/>Hold Ctrl/Cmd + scroll to zoom`,
-							);
-
-						path.style("opacity", 1).attr("stroke-width", 2.5);
+					.on("mouseover", () => {
+						tooltip.classed("hidden", false);
+						path.style("opacity", 1)
+							.attr("stroke-width", 2.5);
 					})
 					.on("mousemove", (event) => {
+						const [xPos] = d3.pointer(event);
+						const x0 = x.invert(xPos);
+						const i = bisect(companyData as [Date, number][], x0);
+						const d0 = companyData[i - 1];
+						const d1 = companyData[i];
+						
+						if (!d0 || !d1) return;
+						
+						const d = x0.getTime() - d0[0].getTime() > d1[0].getTime() - x0.getTime() ? d1 : d0;
+						
+						if (d[1] === null || d[1] <= 0) return;
+
 						tooltip
 							.style("left", `${event.pageX + 10}px`)
-							.style("top", `${event.pageY - 10}px`);
+							.style("top", `${event.pageY - 10}px`)
+							.html(`
+								${company}<br/>
+								Date: ${formatDate(d[0])}<br/>
+								Price: $${d3.format(",.2f")(d[1])}
+							`.trim().replace(/\n\s*/g, '<br/>'));
 					})
 					.on("mouseout", () => {
 						tooltip.classed("hidden", true);
-						path.style("opacity", 0.7).attr("stroke-width", 1.5);
+						path.style("opacity", 0.7)
+							.attr("stroke-width", 1.5);
 					});
 			}
 		});
@@ -205,25 +222,25 @@ export const StockChart: Component<StockChartProps> = (props) => {
 				// and panning with mouse drag
 				return event.ctrlKey || event.metaKey || event.type === "mousedown";
 			})
-      .on("zoom", (event) => {
-        // Update both x and y scales
-        const newX = event.transform.rescaleX(x);
-        const newY = event.transform.rescaleY(y);
-        
-        // Update axes
-        gX.call(xAxis.scale(newX));
-        gY.call(yAxis.scale(newY));
-        
-        // Update all paths
-        chartContent.selectAll("path")
-          .attr("d", (d: [Date, number][]) => {
-            const newLine = d3.line<[Date, number]>()
-              .defined((d): d is [Date, number] => d[1] !== null && d[1] > 0)
-              .x(d => newX(d[0]))
-              .y(d => newY(d[1]));
-            return newLine(d);
-          });
-      });
+			.on("zoom", (event) => {
+				// Update both x and y scales
+				const newX = event.transform.rescaleX(x);
+				const newY = event.transform.rescaleY(y);
+				
+				// Update axes
+				gX.call(xAxis.scale(newX));
+				gY.call(yAxis.scale(newY));
+				
+				// Update all paths
+				chartContent.selectAll("path")
+					.attr("d", (d: [Date, number][]) => {
+						const newLine = d3.line<[Date, number]>()
+							.defined((d): d is [Date, number] => d[1] !== null && d[1] > 0)
+							.x(d => newX(d[0]))
+							.y(d => newY(d[1]));
+						return newLine(d);
+					});
+			});
 
 		// Add zoom behavior to svg and set cursor styles
 		d3.select(svgRef)

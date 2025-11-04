@@ -2,12 +2,12 @@ name: Run Jupyter Notebook
 
 on:
   schedule:
-    - cron: '30 15 * * 1-5'  # 17:30 GMT+2 converted to UTC (15:30), Monday - Friday
-  workflow_dispatch:  # Allows manual triggering of the workflow
+    - cron: "30 15 * * 1-5" # 17:30 GMT+2 converted to UTC (15:30), Monday - Friday
+  workflow_dispatch: # Allows manual triggering of the workflow
 
 permissions:
   contents: write
-  
+
 jobs:
   run-notebook:
     runs-on: ubuntu-latest
@@ -19,21 +19,12 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: "3.8"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      - name: Run Jupyter Notebook
-        run: |
-          TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
-          jupyter nbconvert --to notebook --execute Zimstockdata.ipynb
-
-      - name: Run TK Jupyter Notebook
-        run: |
-          jupyter nbconvert --to notebook --execute Zimstockdata.tk.ipynb
 
       - name: Run New Comprehensive Jupyter Notebook
         run: |
@@ -47,4 +38,4 @@ jobs:
           git commit -m "Add results for notebook run at $TIMESTAMP"
           git push
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

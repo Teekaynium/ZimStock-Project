@@ -31,18 +31,19 @@ jobs:
           jupyter nbconvert --to notebook --execute Zimstockdata.tk.comprehensive
 
       - name: Commit results
+        if: always()
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S %Z')
           git add archive/
           git add archive-single-file/
-          # Only commit if there are changes
+          git add logs/
           if git diff --cached --quiet; then
             echo "No changes to commit"
           else
             git commit -m "Add results for notebook run at $TIMESTAMP"
             git push
-           fi
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

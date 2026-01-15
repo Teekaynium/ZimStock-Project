@@ -26,7 +26,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run New Comprehensive Jupyter Notebook
+      - name: Run notebook
         run: |
           jupyter nbconvert --to notebook --execute Zimstockdata.tk.comprehensive
 
@@ -34,8 +34,15 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add -f *
-          git commit -m "Add results for notebook run at $TIMESTAMP"
-          git push
+          TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S %Z')
+          git add archive/
+          git add archive-single-file/
+          # Only commit if there are changes
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Add results for notebook run at $TIMESTAMP"
+            git push
+           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

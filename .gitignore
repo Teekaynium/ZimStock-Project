@@ -1,5 +1,4 @@
 .ipynb_checkpoints
-archive
 *node_modules
 *dist
 *.DS_Store

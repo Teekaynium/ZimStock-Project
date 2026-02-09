@@ -678,5 +678,44 @@
     },
     "warnings": [],
     "errors": []
+  },
+  {
+    "timestamp": "2026-02-09T18:30:46.017265+02:00",
+    "status": "failure",
+    "sources": {
+      "zse": {
+        "status": "success",
+        "rows_scraped": 39,
+        "columns_found": [
+          "Company Name",
+          "Opening Price",
+          "Closing Price",
+          "Total Traded Volume"
+        ],
+        "error": null
+      },
+      "rates": {
+        "status": "success",
+        "rows_scraped": 1,
+        "columns_found": [
+          "USA DOLLAR",
+          "Lowest Informal Sector Rate",
+          "Highest Informal Sector Rate"
+        ],
+        "error": null
+      },
+      "vfex": {
+        "status": "failure",
+        "rows_scraped": 0,
+        "columns_found": [],
+        "error": "HTTP 415: Unsupported Media Type"
+      }
+    },
+    "warnings": [
+      "Partial save: 4/7 files updated"
+    ],
+    "errors": [
+      "VFEX update failed: HTTPError: 415 Client Error: Unsupported Media Type for url: https://www.vfex.exchange/price-sheet/"
+    ]
   }
 ]

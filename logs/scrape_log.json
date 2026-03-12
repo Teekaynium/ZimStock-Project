@@ -1592,5 +1592,45 @@
     "errors": [
       "ZSE update failed: HTTPError: 403 Client Error: Forbidden for url: https://www.zse.co.zw/price-sheet/"
     ]
+  },
+  {
+    "timestamp": "2026-03-12T18:33:00.161164+02:00",
+    "status": "success",
+    "sources": {
+      "zse": {
+        "status": "success",
+        "rows_scraped": 39,
+        "columns_found": [
+          "Company Name",
+          "Opening Price",
+          "Closing Price",
+          "Total Traded Volume"
+        ],
+        "error": null
+      },
+      "rates": {
+        "status": "success",
+        "rows_scraped": 1,
+        "columns_found": [
+          "USA DOLLAR",
+          "Lowest Informal Sector Rate",
+          "Highest Informal Sector Rate"
+        ],
+        "error": null
+      },
+      "vfex": {
+        "status": "success",
+        "rows_scraped": 13,
+        "columns_found": [
+          "Company Name",
+          "Opening Price",
+          "Closing Price",
+          "Total Traded Volume"
+        ],
+        "error": null
+      }
+    },
+    "warnings": [],
+    "errors": []
   }
 ]

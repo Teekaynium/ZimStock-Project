@@ -12,6 +12,7 @@ import type {
   ExchangeDashboard,
   ExchangeKey,
   MatrixDataset,
+  OpsRunSummary,
   OpsSummary,
   RankedSecurity,
   RatePoint,
@@ -297,6 +298,20 @@ function buildOps(logs: ScrapeRun[], stats: Record<string, StatsSnapshot[]>) {
     },
     {},
   );
+  const recentRuns = logs.slice(-12).reverse().map<OpsRunSummary>((run) => ({
+    timestamp: run.timestamp,
+    status: run.status,
+    warnings: run.warnings,
+    errors: run.errors,
+    sources: Object.entries(run.sources).reduce<OpsRunSummary['sources']>((result, [source, value]) => {
+      result[source] = {
+        status: value.status,
+        rowsScraped: value.rows_scraped,
+        error: value.error,
+      };
+      return result;
+    }, {}),
+  }));
 
   return {
     latestRunAt: latestRun?.timestamp ?? null,
@@ -305,6 +320,7 @@ function buildOps(logs: ScrapeRun[], stats: Record<string, StatsSnapshot[]>) {
     errorCount: latestRun?.errors.length ?? 0,
     successStreak,
     sources,
+    recentRuns,
     companyCountHistory,
   } satisfies OpsSummary;
 }

@@ -101,6 +101,14 @@ export interface SourceHealth {
   error: string | null;
 }
 
+export interface OpsRunSummary {
+  timestamp: string;
+  status: string;
+  warnings: string[];
+  errors: string[];
+  sources: Record<string, SourceHealth>;
+}
+
 export interface OpsSummary {
   latestRunAt: string | null;
   overallStatus: string;
@@ -108,6 +116,7 @@ export interface OpsSummary {
   errorCount: number;
   successStreak: number;
   sources: Record<string, SourceHealth>;
+  recentRuns: OpsRunSummary[];
   companyCountHistory: Array<{
     date: string;
     companyCount: number;

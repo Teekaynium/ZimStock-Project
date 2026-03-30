@@ -2093,5 +2093,40 @@
       "ZSE update failed: HTTPError: 404 Client Error: Not Found for url: https://www.zse.co.zw/price-sheet",
       "VFEX update failed: HTTPError: 404 Client Error: Not Found for url: https://www.vfex.exchange/price-sheet"
     ]
+  },
+  {
+    "timestamp": "2026-03-30T17:54:00.923566+02:00",
+    "status": "failure",
+    "sources": {
+      "zse": {
+        "status": "failure",
+        "rows_scraped": 0,
+        "columns_found": [],
+        "error": "HTTP 404: Not Found"
+      },
+      "rates": {
+        "status": "success",
+        "rows_scraped": 1,
+        "columns_found": [
+          "USA DOLLAR",
+          "Lowest Informal Sector Rate",
+          "Highest Informal Sector Rate"
+        ],
+        "error": null
+      },
+      "vfex": {
+        "status": "failure",
+        "rows_scraped": 0,
+        "columns_found": [],
+        "error": "HTTP 404: Not Found"
+      }
+    },
+    "warnings": [
+      "Partial save: 1/7 files updated"
+    ],
+    "errors": [
+      "ZSE update failed: HTTPError: 404 Client Error: Not Found for url: https://www.zse.co.zw/price-sheet",
+      "VFEX update failed: HTTPError: 404 Client Error: Not Found for url: https://www.vfex.exchange/price-sheet"
+    ]
   }
 ]

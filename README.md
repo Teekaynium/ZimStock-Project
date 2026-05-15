@@ -15,6 +15,8 @@ Because the main market-data endpoints are no longer publicly returning the expe
 
 The GitHub Actions workflow is retained as a manual no-op record of the sunset decision and no longer runs on a schedule or writes new results.
 
+Earlier ZSE records are available in [bevennyamande/Zimbabwe-Stock-Exchange-Daily-Pricesheets](https://github.com/bevennyamande/Zimbabwe-Stock-Exchange-Daily-Pricesheets). See `DATA_SOURCES.md` for the import window and handoff tasks.
+
 <h2>Description</h2>
 This project aims to extract Zimbabwe stock prices and traded volumes on a daily basis from the official website. This is done in order to create a continuous database as historical stock data is otherwise obtained at a hefty cost. This project enables free and easy access to historical Zim stock data.
 <br />

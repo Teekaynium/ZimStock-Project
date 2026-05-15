@@ -1,5 +1,20 @@
 # ZimStock-Project
 
+## Current status
+
+The automated daily data pipeline has been sunset.
+
+Recent scrape results show the primary ZSE and VFEX price-sheet endpoints now return `HTTP 404: Not Found`:
+
+- `https://www.zse.co.zw/price-sheet`
+- `https://www.vfex.exchange/price-sheet`
+
+The exchanges now charge for access to this market data. Because this was a non-profit research project intended to preserve free access to historical Zimbabwe market data, the project is being preserved as an archive rather than continuing as an active collection pipeline.
+
+Because the main market-data endpoints are no longer publicly returning the expected tables, scheduled archive updates have been paused. The existing JSON files in `archive/` and `archive-single-file/` remain available as historical snapshots, but they should be treated as archived research data rather than a live daily feed.
+
+The GitHub Actions workflow is retained as a manual no-op record of the sunset decision and no longer runs on a schedule or writes new results.
+
 <h2>Description</h2>
 This project aims to extract Zimbabwe stock prices and traded volumes on a daily basis from the official website. This is done in order to create a continuous database as historical stock data is otherwise obtained at a hefty cost. This project enables free and easy access to historical Zim stock data.
 <br />
@@ -52,5 +67,5 @@ Save Updated Data File:  <br/>
 <img src="https://i.imgur.com/gMxbkJS.png" height="80%" width="80%" alt="Modelling"/>
 <br />
 <br />
-The above code is run daily and the data is stored in the archive-single-file folder as a json file via this cron job (https://github.com/Teekaynium/ZimStock-Project/blob/62cfd0f296057a9905e54b3612265f087850d7e5/.github/workflows/run-notebook.yml). 
+This code previously ran daily and stored data in the `archive-single-file/` folder as JSON via the GitHub Actions workflow. That workflow has now been sunset because the primary ZSE and VFEX source endpoints are no longer publicly returning the expected price-sheet data, and the exchanges now charge for access to that data.
 </p>

@@ -31,12 +31,16 @@ The script writes:
 3. **Compare** (task 3): for every date `≥ 2024-11-09`, joins older and local
    on `(date, company, field)` and emits a row per disagreement.
 4. **Flag** (task 4): each row is one of
-   - `numeric_difference`
-   - `missing_in_older_scraper`
-   - `missing_in_local`
-   - `missing_date_in_older_scraper`
-   - `missing_date_in_local`
-   - `duplicate_in_local_archive`
+   - `numeric_difference` — both sides have a value but they disagree
+   - `missing_in_older_scraper` — local has a value, older has none, or older
+     has the sentinel `0` while local has a real value
+   - `missing_in_local` — older has a value, local does not
+   - `missing_date_in_older_scraper` — date exists locally, not in older
+   - `missing_date_in_local` — date exists in older, not locally
+   - `duplicate_in_local_archive` — two folder snapshots for the same date
+     disagree on a value
+   - `consolidated_only_company` — company appears in the local consolidated
+     file but never in any older-scraper day; safe to filter out in review
 5. **Report** (task 5): `reports/overlap_mismatch_report.csv` is the flat
    audit log; the two xlsx files add a `Review List` sheet (with
    `review_status / review_decision / review_notes` columns) plus summary
@@ -48,11 +52,13 @@ The script writes:
 - The CSVs use `MM-DD-YYYY` filenames. The XLSX subset has no embedded date
   and a few files are corrupt (`zipfile.BadZipFile`), so they are skipped.
 - "Sentinel 0" in the older scraper means "no data for this field on this
-  day". These show up as `missing_in_older_scraper`, not as `numeric_difference`.
-- A handful of companies (Zimbabwe Stock Exchange Holdings, Tn Cybertech
+  day". When local has a real value and older reports `0`, the row is
+  classified as `missing_in_older_scraper` (not `numeric_difference`).
+  When both sides are `0`, the row is silently skipped as a match.
+- Three companies (Zimbabwe Stock Exchange Holdings, Tn Cybertech
   Investments Holdings, Ok Zimbabwe Limited Las) only appear in the local
-  consolidated file, never in the older scraper. They account for the bulk
-  of `missing_in_older_scraper` rows and can be filtered in the review.
+  consolidated file, never in any older-scraper day. Every row for them
+  is tagged `consolidated_only_company` so the review can filter them out.
 - `duplicate_in_local_archive` is detected by reading every folder
   snapshot under `../archive/`. The three dates with duplicate folders
   (`2024-11-10`, `2025-07-01`, `2025-08-05`) are checked; only

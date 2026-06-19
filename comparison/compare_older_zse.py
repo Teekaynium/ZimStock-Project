@@ -169,8 +169,9 @@ def load_older_xlsx(path: Path) -> DaySnapshot:
     return snap
 
 
-def load_older_data() -> dict[str, DaySnapshot]:
+def load_older_data() -> tuple[dict[str, DaySnapshot], set[str]]:
     out: dict[str, DaySnapshot] = {}
+    all_companies: set[str] = set()
 
     for path in sorted(OLDER_CSV_DIR.glob("*.csv")):
         d = parse_csv_filename(path.name)
@@ -179,6 +180,7 @@ def load_older_data() -> dict[str, DaySnapshot]:
         key = d.isoformat()
         snap = load_older_csv(path)
         if snap.rows:
+            all_companies.update(snap.rows.keys())
             out[key] = merge_snapshots(out.get(key), snap)
 
     for path in sorted(OLDER_XLSX_DIR.glob("*.xlsx")):
@@ -188,9 +190,10 @@ def load_older_data() -> dict[str, DaySnapshot]:
         key = d.isoformat()
         snap = load_older_xlsx(path)
         if snap.rows:
+            all_companies.update(snap.rows.keys())
             out[key] = merge_snapshots(out.get(key), snap)
 
-    return out
+    return out, all_companies
 
 
 def merge_snapshots(existing: DaySnapshot | None, incoming: DaySnapshot) -> DaySnapshot:
@@ -423,6 +426,7 @@ def compare(
     older: dict[str, DaySnapshot],
     local: dict[str, tuple[DaySnapshot, list[DaySnapshot]]],
     comparison_start: date,
+    all_older_companies: set[str],
 ) -> list[Issue]:
     issues: list[Issue] = []
     all_days = set(older.keys()) | set(local.keys())
@@ -453,9 +457,24 @@ def compare(
             local_companies = set(local_snap.rows.keys())
 
             for company in sorted(local_companies - older_companies):
+                issue_type = (
+                    "consolidated_only_company"
+                    if company not in all_older_companies
+                    else "missing_in_older_scraper"
+                )
+                note = (
+                    "Company exists only in local consolidated file, never in older scraper."
+                    if issue_type == "consolidated_only_company"
+                    else ""
+                )
+                any_data = any(getattr(local_snap.rows[company], fld) is not None for fld in FIELDS)
+                if not any_data and issue_type == "consolidated_only_company":
+                    continue
                 for fld in FIELDS:
                     lv = getattr(local_snap.rows[company], fld)
-                    issues.append(Issue(day, company, FIELD_DISPLAY[fld], fmt(lv), "missing", "missing_in_older_scraper"))
+                    if lv is None:
+                        continue
+                    issues.append(Issue(day, company, FIELD_DISPLAY[fld], fmt(lv), "missing", issue_type, note=note))
             for company in sorted(older_companies - local_companies):
                 for fld in FIELDS:
                     ov = getattr(older_snap.rows[company], fld)
@@ -474,7 +493,14 @@ def compare(
                         issues.append(Issue(day, company, FIELD_DISPLAY[fld], fmt(lv), "missing", "missing_in_older_scraper"))
                         continue
                     if abs(lv - ov) > NUMERIC_TOLERANCE:
-                        issues.append(Issue(day, company, FIELD_DISPLAY[fld], fmt(lv), fmt(ov), "numeric_difference"))
+                        if ov == 0 and lv != 0:
+                            issues.append(Issue(
+                                day, company, FIELD_DISPLAY[fld], fmt(lv), "missing",
+                                "missing_in_older_scraper",
+                                note="older scraper reports 0 (sentinel for no data); local has a real value",
+                            ))
+                        else:
+                            issues.append(Issue(day, company, FIELD_DISPLAY[fld], fmt(lv), fmt(ov), "numeric_difference"))
 
         if local_snap is not None and local_duplicates:
             seen: set[tuple[str, str]] = set()
@@ -613,10 +639,11 @@ def main() -> None:
     NORMALIZED_DIR.mkdir(parents=True, exist_ok=True)
 
     print("Loading older scraper data from reference-data/older-zse/ ...")
-    older = load_older_data()
+    older, all_older_companies = load_older_data()
     print(f"  days with data: {len(older)}")
     older_in_window = sum(1 for d in older if BRIEF_IMPORT_START <= date.fromisoformat(d) <= BRIEF_IMPORT_END)
     print(f"  days in import window 2020-10-08 to 2024-11-08: {older_in_window}")
+    print(f"  unique companies across all older days: {len(all_older_companies)}")
 
     print("Loading local archive (folders + consolidated) ...")
     folder_data = load_local_from_folders()
@@ -629,7 +656,7 @@ def main() -> None:
     print(f"  companies: {len(norm_meta['companies'])}, days: {norm_meta['in_window_count']}")
 
     print("Comparing overlap from 2024-11-09 onward ...")
-    issues = compare(older, local, BRIEF_LOCAL_START)
+    issues = compare(older, local, BRIEF_LOCAL_START, all_older_companies)
     print(f"  issues found: {len(issues)}")
 
     by_type: dict[str, int] = defaultdict(int)

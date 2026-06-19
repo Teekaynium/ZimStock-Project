@@ -25,10 +25,20 @@ the closest is `10-10-2020.csv` (October 10, 2020) or `08-10-2020.csv` (August
 
 ```
 reference-data/older-zse/
-  csv-daily-pricesheets/
+  csv-daily-pricesheets/   1,352 files, MM-DD-YYYY, 2022-02-25 → 2026-06-19
     MM-DD-YYYY.csv
+    ...
+  xls-daily-price-sheets/  1,424 files, 4 cols (Company, Open, Close, Volume)
+    MM-DD-YYYY.xlsx
     ...
 ```
 
-`xls-daily-price-sheets/` from upstream was intentionally excluded to keep this
-folder small; the CSVs are the canonical read-only record.
+XLSX files were added on a second pass. A few XLSX files are corrupt (bad zip
+headers) and will fail to open. Both folders share the same `MM-DD-YYYY`
+filename convention.
+
+The XLSX format has no embedded date and the brief warns that the older
+repository has used date-stamped filenames over time. A small spot check
+(`10-10-2020.xlsx` vs `11-10-2020.xlsx`) shows identical data, so the date in
+the filename is not always reliable for the XLSX subset. Confirm the format
+per the brief before importing.

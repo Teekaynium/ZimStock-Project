@@ -207,8 +207,8 @@ def merge_snapshots(existing: DaySnapshot | None, incoming: DaySnapshot) -> DayS
     return existing
 
 
-def _is_real_company(name: str) -> bool:
-    return bool(name) and name == name.strip() and name.upper() != name
+def _canonical_company(name: str) -> str:
+    return name.strip().lower()
 
 
 def _parse_archive_value(raw: Any) -> float | None:
@@ -233,6 +233,7 @@ def load_local_from_consolidated() -> dict[str, DaySnapshot]:
         "vol": LOCAL_SINGLE_FILE_DIR / "vol_traded_zse.json",
     }
     data_by_field: dict[str, dict[str, dict[str, float | None]]] = {}
+    canonical_to_display: dict[str, str] = {}
     for label, path in files.items():
         if not path.exists():
             continue
@@ -246,11 +247,18 @@ def load_local_from_consolidated() -> dict[str, DaySnapshot]:
             day = str(dlabel).split("T")[0]
             per_day[day] = {}
             for ci, company in enumerate(cols):
-                if not _is_real_company(company):
+                if not company or not company.strip():
                     continue
                 if di >= len(data) or ci >= len(data[di]):
                     continue
-                per_day[day][company] = _parse_archive_value(data[di][ci])
+                canonical = _canonical_company(company)
+                display = company.strip()
+                if canonical not in canonical_to_display:
+                    canonical_to_display[canonical] = display
+                v = _parse_archive_value(data[di][ci])
+                existing = per_day[day].get(canonical)
+                if existing is None or v is not None:
+                    per_day[day][canonical] = v
         data_by_field[label] = per_day
 
     all_days = set()
@@ -262,12 +270,13 @@ def load_local_from_consolidated() -> dict[str, DaySnapshot]:
         opens = data_by_field.get("open", {}).get(day, {})
         closes = data_by_field.get("close", {}).get(day, {})
         vols = data_by_field.get("vol", {}).get(day, {})
-        for company in set(opens) | set(closes) | set(vols):
+        for canonical in set(opens) | set(closes) | set(vols):
+            company = canonical_to_display.get(canonical, canonical)
             snap.rows[company] = DailyRow(
                 company,
-                opens.get(company),
-                closes.get(company),
-                vols.get(company),
+                opens.get(canonical),
+                closes.get(canonical),
+                vols.get(canonical),
             )
         out[day] = snap
     return out

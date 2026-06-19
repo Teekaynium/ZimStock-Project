@@ -55,6 +55,13 @@ The script writes:
   day". When local has a real value and older reports `0`, the row is
   classified as `missing_in_older_scraper` (not `numeric_difference`).
   When both sides are `0`, the row is silently skipped as a match.
+- The consolidated local file uses two naming conventions for the same
+  companies: `Ok Zimbabwe Limited` (mixed-case) for 2024-11-10 →
+  2025-12-15, and `OK ZIMBABWE LIMITED` (UPPERCASE) for 2025-08-15 →
+  2026-03-13. The two series cover different (non-overlapping) days. The
+  loader canonicalises by lowercase and merges them into one logical row
+  per company, so the comparison sees the full `2024-11-10 → 2026-03-13`
+  coverage.
 - Three companies (Zimbabwe Stock Exchange Holdings, Tn Cybertech
   Investments Holdings, Ok Zimbabwe Limited Las) only appear in the local
   consolidated file, never in any older-scraper day. Every row for them
